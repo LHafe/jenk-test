@@ -9,6 +9,7 @@ pipeline {
     }
 
     stages {
+
         stage('Install Python') {
             steps {
                 sh '''
@@ -28,6 +29,7 @@ pipeline {
                 '''
             }
         }
+
         stage('Python Security Audit') {
             steps {
                 sh '''
@@ -55,6 +57,7 @@ pipeline {
                 }
             }
         }
+
         stage('Dependency Check') {
             environment {
                 NVD_API_KEY = credentials('nvdApiKey')
@@ -65,33 +68,35 @@ pipeline {
         }
 
         stage('Install Doxygen') {
-    steps {
-        sh '''
-            apt update
-            apt install -y doxygen graphviz
-        '''
-    }
-}
+            steps {
+                sh '''
+                    apt update
+                    apt install -y doxygen graphviz
+                '''
+            }
+        }
 
         stage('Generate Documentation') {
-    steps {
-        sh '''
-            doxygen Doxyfile
-        '''
-    }
-}
+            steps {
+                sh '''
+                    doxygen Doxyfile
+                '''
+            }
+        }
         
         stage('Publish Documentation') {
-    steps {
-        publishHTML([
-            allowMissing: false,
-            alwaysLinkToLastBuild: true,
-            keepAll: true,
-            reportDir: 'docs/html',
-            reportFiles: 'index.html',
-            reportName: 'Doxygen Documentation'
-        ])
-      }
+            steps {
+                publishHTML([
+                    allowMissing: false,
+                    alwaysLinkToLastBuild: true,
+                    keepAll: true,
+                    reportDir: 'docs/html',
+                    reportFiles: 'index.html',
+                    reportName: 'Doxygen Documentation'
+                ])
+            }
+        }
+
     }
 
 }
