@@ -64,18 +64,34 @@ pipeline {
             }
         }
 
-        stage('Publish Reports') {
-            steps {
-                publishHTML([
-                    allowMissing: false,
-                    alwaysLinkToLastBuild: true,
-                    keepAll: true,
-                    reportDir: 'dependency-check-report',
-                    reportFiles: 'dependency-check-report.html',
-                    reportName: 'OWASP Dependency Check Report'
-                ])
-            }
-        }
+        stage('Install Doxygen') {
+    steps {
+        sh '''
+            apt update
+            apt install -y doxygen graphviz
+        '''
+    }
+}
+
+        stage('Generate Documentation') {
+    steps {
+        sh '''
+            doxygen Doxyfile
+        '''
+    }
+}
+        
+        stage('Publish Documentation') {
+    steps {
+        publishHTML([
+            allowMissing: false,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: 'docs/html',
+            reportFiles: 'index.html',
+            reportName: 'Doxygen Documentation'
+        ])
+      }
     }
 
 }
